@@ -4,6 +4,7 @@ from typing import List
 
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi_cdn_host import monkey_patch_for_docs_ui
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from starlette import status
@@ -13,10 +14,11 @@ from models import User, VerificationCode, pwd_context, Collection, WebsiteImage
 from database import get_db, Base, engine
 from utils import generate_verification_code, send_email, create_access_token, verify_token
 from email_validator import validate_email, EmailNotValidError
-
+from routers.tags import router as tags_router
 # Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+monkey_patch_for_docs_ui(app)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 origins = [
     "http://localhost.tiangolo.com",
@@ -35,7 +37,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+# 引入标签路由
+app.include_router(tags_router, prefix="/tags")
 
 # 简单的测试路由
 @app.get("/")
