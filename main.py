@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime, timedelta
 from typing import List
 
@@ -15,11 +16,14 @@ from database import get_db, Base, engine
 from utils import generate_verification_code, send_email, create_access_token, verify_token
 from email_validator import validate_email, EmailNotValidError
 from routers.tags import router as tags_router
+from routers.user import router as user_router  # 导入 User.py 中的路由
 # Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 monkey_patch_for_docs_ui(app)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+
 origins = [
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
@@ -36,7 +40,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+# 挂载 User.py 中的路由
+app.include_router(user_router, prefix="/user")
 # 引入标签路由
 app.include_router(tags_router, prefix="/tags")
 
@@ -161,14 +166,19 @@ def protected_route(current_user: str = Depends(get_current_user),db: Session = 
             detail="User not found"
         )
     user_info = {
+        "id": user.id,
         "username": user.username,
         "email": user.email,
-        "is_active": user.is_active
+        "is_active": user.is_active,
+        "avatar": user.avatar,
+        "description": user.description,
+        "blog": user.blog
     }
     return {
         "message": f"Hello, {current_user}! This is a protected route.",
         "user_info": user_info
     }
+# 定义上传头像的请求模型
 
 
 

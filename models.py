@@ -20,6 +20,11 @@ class User(Base):
     email = Column(String(255), unique=True, index=True)
     hashed_password = Column(String(255))
     is_active = Column(Boolean, default=True)
+    avatar = Column(String(255))
+    description = Column(String(255))
+    blog = Column(String)
+    create_date = Column(DateTime, default=datetime.utcnow)
+
 
     def verify_password(self, password: str):
         return pwd_context.verify(password, self.hashed_password)
