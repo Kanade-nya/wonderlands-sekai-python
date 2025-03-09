@@ -17,6 +17,7 @@ from utils import generate_verification_code, send_email, create_access_token, v
 from email_validator import validate_email, EmailNotValidError
 from routers.tags import router as tags_router
 from routers.user import router as user_router  # 导入 User.py 中的路由
+from routers.articles import router as articles_router  # 导入 User.py 中的路由
 # Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -45,6 +46,8 @@ app.include_router(user_router, prefix="/user")
 # 引入标签路由
 app.include_router(tags_router, prefix="/tags")
 
+# 挂载文章路由
+app.include_router(articles_router, prefix="/articles")
 # 简单的测试路由
 @app.get("/")
 def read_root():

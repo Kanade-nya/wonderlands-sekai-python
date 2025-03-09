@@ -29,6 +29,20 @@ class User(Base):
     def verify_password(self, password: str):
         return pwd_context.verify(password, self.hashed_password)
 
+
+class Article(Base):
+    __tablename__ = "articles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    author_name = Column(String(255))
+    author_id = Column(Integer, ForeignKey('users.id'))
+    author_avatar = Column(String(255))
+    content = Column(String(255))
+    title = Column(String(255))
+    create_date = Column(DateTime, default=datetime.utcnow)
+
+    author = relationship("User", backref="articles")
+
 class VerificationCode(Base):
     __tablename__ = "verification_codes"
 
